@@ -37,27 +37,9 @@ public class RowStore extends Store {
 			reader = new BufferedReader(new FileReader(file));
 			String text;
 			while ((text = reader.readLine()) != null) {
-				String[] fields = text.split(delimiter);
-				Object[] convertedFields = new Object[schema.length];
-				for (int i = 0; i < schema.length; i++) {
-					switch (schema[i]) {
-					case INT:
-						convertedFields[i] = Integer.parseInt(fields[i]);
-					case DOUBLE:
-						convertedFields[i] = Double.parseDouble(fields[i]);
-					case BOOLEAN:
-						convertedFields[i] = Boolean.parseBoolean(fields[i]);
-					case STRING:
-						convertedFields[i] = fields[i];
-					default:
-						// ????????????????
-						convertedFields[i] = fields[i];
-					}
-				}
-				DBTuple tuple = new DBTuple(convertedFields, this.schema);
+				DBTuple tuple = getTupleFromLine(text);
 				this.tuples.add(tuple);
 			}
-			this.tuples.add(new DBTuple());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -74,9 +56,31 @@ public class RowStore extends Store {
 	@Override
 	public DBTuple getRow(int rownumber) {
 		if (rownumber < 0 || rownumber >= tuples.size()) {
-			return null;
+			return new DBTuple();
 		}
-		
+
 		return tuples.get(rownumber);
+	}
+
+	private DBTuple getTupleFromLine(String line) {
+		String[] fields = line.split(delimiter);
+		Object[] convertedFields = new Object[schema.length];
+		for (int i = 0; i < schema.length; i++) {
+			switch (schema[i]) {
+			case INT:
+				convertedFields[i] = Integer.parseInt(fields[i]);
+			case DOUBLE:
+				convertedFields[i] = Double.parseDouble(fields[i]);
+			case BOOLEAN:
+				convertedFields[i] = Boolean.parseBoolean(fields[i]);
+			case STRING:
+				convertedFields[i] = fields[i];
+			default:
+				// ????????????????
+				convertedFields[i] = fields[i];
+			}
+		}
+		DBTuple tuple = new DBTuple(convertedFields, this.schema);
+		return tuple;
 	}
 }
