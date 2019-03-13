@@ -64,9 +64,9 @@ public class RowStore extends Store {
 
 	private DBTuple getTupleFromLine(String line) {
 		String[] fields = line.split(delimiter);
-		Object[] convertedFields = new Object[schema.length];
-		for (int i = 0; i < schema.length; i++) {
-			switch (schema[i]) {
+		Object[] convertedFields = new Object[this.schema.length];
+		for (int i = 0; i < this.schema.length; i++) {
+			switch (this.schema[i]) {
 			case INT:
 				convertedFields[i] = Integer.parseInt(fields[i]);
 			case DOUBLE:
