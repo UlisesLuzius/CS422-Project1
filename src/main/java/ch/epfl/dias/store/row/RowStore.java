@@ -48,6 +48,7 @@ public class RowStore extends Store {
 					reader.close();
 				}
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 
