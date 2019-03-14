@@ -70,15 +70,20 @@ public class RowStore extends Store {
 			switch (this.schema[i]) {
 			case INT:
 				convertedFields[i] = Integer.parseInt(fields[i]);
+				break;
 			case DOUBLE:
 				convertedFields[i] = Double.parseDouble(fields[i]);
+				break;
 			case BOOLEAN:
 				convertedFields[i] = Boolean.parseBoolean(fields[i]);
+				break;
 			case STRING:
 				convertedFields[i] = fields[i];
+				break;
 			default:
 				// ????????????????
 				convertedFields[i] = fields[i];
+				break;
 			}
 		}
 		DBTuple tuple = new DBTuple(convertedFields, this.schema);
