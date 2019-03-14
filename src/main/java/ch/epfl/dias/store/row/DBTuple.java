@@ -16,15 +16,7 @@ public class DBTuple {
 	public DBTuple() {
 		this.eof = true;
 	}
-
-	/**
-	 * XXX Assuming that the caller has ALREADY checked the datatype, and has
-	 * made the right call
-	 * 
-	 * @param fieldNo
-	 *            (starting from 0)
-	 * @return cast of field
-	 */
+	
 	public Integer getFieldAsInt(int fieldNo) {
 		return (Integer) fields[fieldNo];
 	}

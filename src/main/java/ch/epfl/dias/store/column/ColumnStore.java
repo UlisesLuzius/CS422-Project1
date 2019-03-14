@@ -4,13 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import ch.epfl.dias.store.DataType;
 import ch.epfl.dias.store.Store;
-import ch.epfl.dias.store.row.DBTuple;
 
 public class ColumnStore extends Store {
 	private DataType[] schema;
@@ -35,48 +32,38 @@ public class ColumnStore extends Store {
 		File file = new File("input/" + this.filename);
 		BufferedReader reader = null;
 
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String text;
-			ArrayList<ArrayList<Object>> temp = new ArrayList<ArrayList<Object>>();
+		reader = new BufferedReader(new FileReader(file));
+		String text;
+		ArrayList<ArrayList<Object>> temp = new ArrayList<ArrayList<Object>>();
 
-			while ((text = reader.readLine()) != null) {
-				String[] fields = text.split(delimiter);
-				for (int i = 0; i < this.schema.length; i++) {
-					switch (this.schema[i]) {
-					case INT:
-						temp.get(i).add(Integer.parseInt(fields[i]));
-						break;
-					case DOUBLE:
-						temp.get(i).add(Double.parseDouble(fields[i]));
-						break;
-					case BOOLEAN:
-						temp.get(i).add(Boolean.parseBoolean(fields[i]));
-						break;
-					case STRING:
-						temp.get(i).add(fields[i]);
-						break;
-					default:
-						// ????????????????
-						temp.get(i).add(fields[i]);
-						break;
-					}
-				}
-			}
+		while ((text = reader.readLine()) != null) {
+			String[] fields = text.split(delimiter);
 			for (int i = 0; i < this.schema.length; i++) {
-				columns.add(new DBColumn(temp.get(i).toArray()));
-			}
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
+				switch (this.schema[i]) {
+				case INT:
+					temp.get(i).add(Integer.parseInt(fields[i]));
+					break;
+				case DOUBLE:
+					temp.get(i).add(Double.parseDouble(fields[i]));
+					break;
+				case BOOLEAN:
+					temp.get(i).add(Boolean.parseBoolean(fields[i]));
+					break;
+				case STRING:
+					temp.get(i).add(fields[i]);
+					break;
+				default:
+					// ????????????????
+					temp.get(i).add(fields[i]);
+					break;
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		}
+		for (int i = 0; i < this.schema.length; i++) {
+			columns.add(new DBColumn(temp.get(i).toArray()));
+		}
+		if (reader != null) {
+			reader.close();
 		}
 	}
 

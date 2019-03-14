@@ -33,25 +33,15 @@ public class RowStore extends Store {
 		File file = new File("input/" + this.filename);
 		BufferedReader reader = null;
 
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String text;
-			while ((text = reader.readLine()) != null) {
-				DBTuple tuple = getTupleFromLine(text);
-				this.tuples.add(tuple);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		reader = new BufferedReader(new FileReader(file));
+		String text;
+		while ((text = reader.readLine()) != null) {
+			DBTuple tuple = getTupleFromLine(text);
+			this.tuples.add(tuple);
 		}
-
+		if (reader != null) {
+			reader.close();
+		}
 	}
 
 	@Override
