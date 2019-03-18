@@ -50,6 +50,4 @@ public class DBPAXpage {
 		
 		return new DBTuple(fields, types);
 	}
-
-	// TODO: Implement
 }
