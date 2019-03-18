@@ -60,7 +60,7 @@ public class ColumnStore extends Store {
 			}
 		}
 		for (int i = 0; i < this.schema.length; i++) {
-			columns.add(new DBColumn(temp.get(i).toArray()));
+			columns.add(new DBColumn(temp.get(i).toArray(), this.schema[i]));
 		}
 		if (reader != null) {
 			reader.close();

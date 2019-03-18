@@ -15,9 +15,16 @@ import ch.epfl.dias.store.row.DBTuple;
 public class PAXStore extends Store {
 
 	// TODO: Add required structures
+	DataType[] schema;
+	String filename;
+	String delimiter;
+	int tuplesPerPage;
 
 	public PAXStore(DataType[] schema, String filename, String delimiter, int tuplesPerPage) {
-		// TODO: Implement
+		this.schema = schema;
+		this.filename = filename;
+		this.delimiter = delimiter;
+		this.tuplesPerPage = tuplesPerPage;
 	}
 
 	@Override
