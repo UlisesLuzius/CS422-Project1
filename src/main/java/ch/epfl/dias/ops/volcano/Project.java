@@ -7,25 +7,40 @@ import ch.epfl.dias.store.row.DBTuple;
 
 public class Project implements VolcanoOperator {
 
-	// TODO: Add required structures
+	private VolcanoOperator child;
+	private int[] fieldNo;
 
 	public Project(VolcanoOperator child, int[] fieldNo) {
-		// TODO: Implement
+		this.child = child;
+		this.fieldNo = fieldNo;
 	}
 
 	@Override
 	public void open() {
-		// TODO: Implement
+		this.child.open();
 	}
 
 	@Override
 	public DBTuple next() {
-		// TODO: Implement
-		return null;
+		DBTuple tuple = child.next();
+
+		if (tuple.eof) {
+			return tuple;
+		} else {
+			Object[] fields = new Object[fieldNo.length];
+			DataType[] newTypes = new DataType[fieldNo.length];
+			DataType[] oldTypes = tuple.getTypes();
+
+			for (int i : fieldNo) {
+				fields[i] = tuple.getFieldAsObject(i);
+				newTypes[i] = oldTypes[i];
+			}
+			return new DBTuple(fields, newTypes);
+		}
 	}
 
 	@Override
 	public void close() {
-		// TODO: Implement
+		this.child.close();
 	}
 }
