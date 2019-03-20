@@ -29,7 +29,7 @@ public class PAXStore extends Store {
 		this.tuplesPerPage = tuplesPerPage;
 		this.pages = new ArrayList<DBPAXpage>();
 	}
-
+	
 	@Override
 	public void load() throws IOException {
 		File file = new File("input/" + this.filename);
