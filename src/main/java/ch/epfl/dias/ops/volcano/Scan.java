@@ -7,7 +7,6 @@ import ch.epfl.dias.store.row.DBTuple;
 
 public class Scan implements VolcanoOperator {
 
-	// TODO: Add required structures
 	private Store store;
 	private int index;
 
