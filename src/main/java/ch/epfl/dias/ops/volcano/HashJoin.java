@@ -6,9 +6,10 @@ import ch.epfl.dias.store.row.DBTuple;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class HashJoin implements VolcanoOperator {
@@ -18,7 +19,9 @@ public class HashJoin implements VolcanoOperator {
 	private int leftFieldNo;
 	private int rightFieldNo;
 	private HashMap<Integer, ArrayList<DBTuple>> hashMap;
-	private ArrayList<DBTuple> tuples;
+	private ArrayList<DBTuple> currentRightTuples;
+	private Iterator<DBTuple> iter;
+	private DBTuple currentLeft;
 
 	public HashJoin(VolcanoOperator leftChild, VolcanoOperator rightChild, int leftFieldNo, int rightFieldNo) {
 		this.leftChild = leftChild;
@@ -31,25 +34,61 @@ public class HashJoin implements VolcanoOperator {
 	public void open() {
 		this.leftChild.open();
 		this.rightChild.open();
-		
+
 		DBTuple currentRight = rightChild.next();
-		while(!currentRight.eof) {
+		while (!currentRight.eof) {
 			int currentValue = currentRight.getFieldAsInt(rightFieldNo);
 			ArrayList<DBTuple> tuples = this.hashMap.getOrDefault(currentValue, new ArrayList<DBTuple>());
 			tuples.add(currentRight);
 			this.hashMap.put(currentValue, tuples);
 		}
-		
 	}
 
 	@Override
 	public DBTuple next() {
-		// TODO: Implement
-		return null;
+		while (this.currentRightTuples == null) {
+			this.currentLeft = leftChild.next();
+			this.currentRightTuples = hashMap.get(this.currentLeft.getFieldAsInt(leftFieldNo));
+			this.iter = this.currentRightTuples.iterator();
+		}
+		if (iter.hasNext()) {
+			return join(this.currentLeft, iter.next());
+		} else {
+			return this.next();
+		}
 	}
 
 	@Override
 	public void close() {
-		// TODO: Implement
+		this.leftChild.close();
+		this.rightChild.close();
+	}
+
+	private DBTuple join(DBTuple left, DBTuple right) {
+		Object[] leftFields = left.getFields();
+		Object[] rightFields = right.getFields();
+		int leftLength = leftFields.length;
+		int rightLength = rightFields.length;
+
+		DataType[] leftTypes = left.getTypes();
+		DataType[] rightTypes = right.getTypes();
+
+		Object[] finalFields = new Object[leftLength + rightLength - 1];
+		DataType[] finalDataTypes = new DataType[leftLength + rightLength - 1];
+
+		for (int i = 0; i < leftLength; i++) {
+			finalFields[i] = leftFields[i];
+			finalDataTypes[i] = leftTypes[i];
+		}
+
+		for (int j = 0; j < rightLength; j++) {
+			if (j == rightFieldNo) {
+				j++;
+			} else {
+				finalFields[leftLength + j] = rightFields[j];
+				finalDataTypes[leftLength + j] = rightTypes[j];
+			}
+		}
+		return new DBTuple(finalFields, finalDataTypes);
 	}
 }

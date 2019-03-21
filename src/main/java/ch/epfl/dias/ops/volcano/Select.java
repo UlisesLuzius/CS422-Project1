@@ -19,7 +19,7 @@ public class Select implements VolcanoOperator {
 
 	@Override
 	public void open() {
-		child.open();
+		this.child.open();
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public class Select implements VolcanoOperator {
 
 	@Override
 	public void close() {
-		child.close();
+		this.child.close();
 	}
 }

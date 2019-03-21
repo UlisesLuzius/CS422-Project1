@@ -3,8 +3,8 @@ package ch.epfl.dias.store.row;
 import ch.epfl.dias.store.DataType;
 
 public class DBTuple {
-	public Object[] fields;
-	public DataType[] types;
+	private Object[] fields;
+	private DataType[] types;
 	public boolean eof;
 
 	public DBTuple(Object[] fields, DataType[] types) {
@@ -19,6 +19,10 @@ public class DBTuple {
 	
 	public DataType[] getTypes() {
 		return this.types;
+	}
+	
+	public Object[] getFields() {
+		return this.fields;
 	}
 	
 	public Integer getFieldAsInt(int fieldNo) {
