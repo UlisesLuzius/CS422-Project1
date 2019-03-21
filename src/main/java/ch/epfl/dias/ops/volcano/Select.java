@@ -24,20 +24,15 @@ public class Select implements VolcanoOperator {
 
 	@Override
 	public DBTuple next() {
-		DBTuple tuple = child.next();
-
-		if (tuple.eof) {
-			return tuple;
-		}
-
+		boolean select = false;
+		DBTuple tuple = this.child.next();
 		int fieldValue = tuple.getFieldAsInt(fieldNo);
-		boolean select = filter(fieldValue, this.op, this.value);
 
-		if (select) {
-			return tuple;
-		} else {
-			return child.next();
+		while (!(select = filter(fieldValue, this.op, this.value)) && !tuple.eof) {
+			tuple = child.next();
+			fieldValue = tuple.getFieldAsInt(fieldNo);
 		}
+		return tuple;
 	}
 
 	public boolean filter(int field, BinaryOp op, int value) {
@@ -56,7 +51,7 @@ public class Select implements VolcanoOperator {
 			return field >= value;
 		default:
 			return false;
-		}
+		}a
 	}
 
 	@Override
