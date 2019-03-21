@@ -17,6 +17,10 @@ public class DBTuple {
 		this.eof = true;
 	}
 	
+	public DataType[] getTypes() {
+		return this.types;
+	}
+	
 	public Integer getFieldAsInt(int fieldNo) {
 		return (Integer) fields[fieldNo];
 	}
@@ -31,5 +35,9 @@ public class DBTuple {
 
 	public String getFieldAsString(int fieldNo) {
 		return (String) fields[fieldNo];
+	}
+	
+	public Object getFieldAsObject(int fieldNo) {
+		return fields[fieldNo];
 	}
 }
