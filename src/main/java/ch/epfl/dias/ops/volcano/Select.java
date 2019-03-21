@@ -51,7 +51,7 @@ public class Select implements VolcanoOperator {
 			return field >= value;
 		default:
 			return false;
-		}a
+		}
 	}
 
 	@Override
