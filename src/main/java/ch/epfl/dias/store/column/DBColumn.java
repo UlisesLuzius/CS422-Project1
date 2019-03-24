@@ -46,19 +46,19 @@ public class DBColumn {
 	}
 
 	public Integer[] getAsInteger() {
-		return Arrays.asList(values).toArray(new Integer[0]);
+		return values.toArray(new Integer[0]);
 	}
 
 	public Double[] getAsDouble() {
-		return Arrays.asList(values).toArray(new Double[0]);
+		return values.toArray(new Double[0]);
 	}
 
 	public Boolean[] getAsBoolean() {
-		return Arrays.asList(values).toArray(new Boolean[0]);
+		return values.toArray(new Boolean[0]);
 	}
 
 	public String[] getAsString() {
-		return Arrays.asList(values).toArray(new String[0]);
+		return values.toArray(new String[0]);
 	}
 
 }

@@ -13,7 +13,6 @@ public class Scan implements ColumnarOperator {
 
 	@Override
 	public DBColumn[] execute() {
-		this.store.getColumns(new int[] {});
-		return null;
+		return this.store.getColumns();
 	}
 }

@@ -37,6 +37,9 @@ public class ColumnStore extends Store {
 		reader = new BufferedReader(new FileReader(file));
 		String text;
 		List<ArrayList<Object>> temp = new ArrayList<ArrayList<Object>>();
+		for (int i = 0; i < this.schema.length; i++) {
+			temp.add(new ArrayList<Object>());
+		}
 
 		while ((text = reader.readLine()) != null) {
 			String[] fields = text.split(delimiter);
