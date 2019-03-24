@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ch.epfl.dias.store.DataType;
 import ch.epfl.dias.store.Store;
@@ -13,7 +15,7 @@ public class ColumnStore extends Store {
 	private DataType[] schema;
 	private String filename;
 	private String delimiter;
-  private int columnSize = 0;
+	private int columnSize = 0;
 	private List<DBColumn> columns;
 
 	public ColumnStore(DataType[] schema, String filename, String delimiter) {
@@ -34,7 +36,7 @@ public class ColumnStore extends Store {
 
 		reader = new BufferedReader(new FileReader(file));
 		String text;
-		List<List<Object>> temp = new ArrayList<ArrayList<Object>>();
+		List<ArrayList<Object>> temp = new ArrayList<ArrayList<Object>>();
 
 		while ((text = reader.readLine()) != null) {
 			String[] fields = text.split(delimiter);
@@ -60,9 +62,9 @@ public class ColumnStore extends Store {
 			}
 		}
 		for (int i = 0; i < this.schema.length; i++) {
-			columns.add(new DBColumn(temp.get(i), this.schema[i]));
+			columns.add(new DBColumn(temp.get(i).toArray(), this.schema[i]));
 		}
-    columnSize = columns[0].getSize();
+		columnSize = columns.get(0).size();
 		if (reader != null) {
 			reader.close();
 		}
@@ -70,26 +72,27 @@ public class ColumnStore extends Store {
 
 	@Override
 	public DBColumn[] getColumns(int[] columnsToGet) {
-		DBColumn[] res = new DBColumn[columnsToGet.size];
-    for (int i = 0; i < columnsToGet.size; i++) {
-      res[i] = columns.get(columnsToGet[i]);
-    }
-		return res;
+		DBColumn[] result = new DBColumn[columnsToGet.length];
+		for (int i = 0; i < columnsToGet.length; i++) {
+			result[i] = columns.get(columnsToGet[i]);
+		}
+		return result;
 	}
 
-  public int getColumnSize() {
-    return columnSize;
-  }
+	public int getColumnSize() {
+		return columnSize;
+	}
 
-  public DBColumn[] getColumns() {
-    return columns;
-  }
+	public DBColumn[] getColumns() {
+		return columns.toArray(new DBColumn[] {});
+	}
 
-  public DBColumn[] getColumnsVector(int fromIndex, int toIndex) {
-    DBColumn[] res = new DBColumn[columns.size];
-    for (int i = 0; i < columnsToGet.size; i++) {
-      res[i] = columns.get(i).subList(fromIndex, toIndex);
-    }
-    return res;
-  }
+	public DBColumn[] getColumnsVector(int fromIndex, int toIndex) {
+		DBColumn[] res = new DBColumn[columns.size()];
+		for (int i = 0; i < columns.size(); i++) {
+			res[i] = new DBColumn(Arrays.asList(columns.get(i).getAsObject()).subList(fromIndex, toIndex).toArray(),
+					this.schema[i]);
+		}
+		return res;
+	}
 }
