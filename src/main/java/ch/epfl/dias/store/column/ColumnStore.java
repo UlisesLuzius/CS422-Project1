@@ -13,8 +13,8 @@ public class ColumnStore extends Store {
 	private DataType[] schema;
 	private String filename;
 	private String delimiter;
-	private ArrayList<DBColumn> columns;
-	// TODO: Add required structures
+  private int columnSize = 0;
+	private List<DBColumn> columns;
 
 	public ColumnStore(DataType[] schema, String filename, String delimiter) {
 		this(schema, filename, delimiter, false);
@@ -34,7 +34,7 @@ public class ColumnStore extends Store {
 
 		reader = new BufferedReader(new FileReader(file));
 		String text;
-		ArrayList<ArrayList<Object>> temp = new ArrayList<ArrayList<Object>>();
+		List<List<Object>> temp = new ArrayList<ArrayList<Object>>();
 
 		while ((text = reader.readLine()) != null) {
 			String[] fields = text.split(delimiter);
@@ -60,8 +60,9 @@ public class ColumnStore extends Store {
 			}
 		}
 		for (int i = 0; i < this.schema.length; i++) {
-			columns.add(new DBColumn(temp.get(i).toArray(), this.schema[i]));
+			columns.add(new DBColumn(temp.get(i), this.schema[i]));
 		}
+    columnSize = columns[0].getSize();
 		if (reader != null) {
 			reader.close();
 		}
@@ -69,19 +70,26 @@ public class ColumnStore extends Store {
 
 	@Override
 	public DBColumn[] getColumns(int[] columnsToGet) {
-		int length = columnsToGet.length;
-		DBColumn[] result;
-		if (length == 0) {
-			result = new DBColumn[columns.size()];
-			for (int i = 0; i < this.columns.size(); i++) {
-				result[i] = columns.get(i);
-			}
-		} else {
-			result = new DBColumn[columnsToGet.length];
-			for (int i = 0; i < columnsToGet.length; i++) {
-				result[i] = columns.get(columnsToGet[i]);
-			}
-		}
-		return result;
+		DBColumn[] res = new DBColumn[columnsToGet.size];
+    for (int i = 0; i < columnsToGet.size; i++) {
+      res[i] = columns.get(columnsToGet[i]);
+    }
+		return res;
 	}
+
+  public int getColumnSize() {
+    return columnSize;
+  }
+
+  public DBColumn[] getColumns() {
+    return columns;
+  }
+
+  public DBColumn[] getColumnsVector(int fromIndex, int toIndex) {
+    DBColumn[] res = new DBColumn[columns.size];
+    for (int i = 0; i < columnsToGet.size; i++) {
+      res[i] = columns.get(i).subList(fromIndex, toIndex);
+    }
+    return res;
+  }
 }
