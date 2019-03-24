@@ -35,6 +35,10 @@ public class DBColumn {
 	public int size() {
 		return this.size;
 	}
+	
+	public Object get(int i) {
+		return this.values.get(i);
+	}
 
 	public Integer[] getAsInteger() {
 		return Arrays.asList(this.values).toArray(new Integer[0]);
