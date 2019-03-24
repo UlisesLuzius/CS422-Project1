@@ -69,9 +69,18 @@ public class ColumnStore extends Store {
 
 	@Override
 	public DBColumn[] getColumns(int[] columnsToGet) {
-		DBColumn[] result = new DBColumn[columnsToGet.length];
-		for (int i = 0; i < columnsToGet.length; i++) {
-			result[i] = columns.get(columnsToGet[i]);
+		int length = columnsToGet.length;
+		DBColumn[] result;
+		if (length == 0) {
+			result = new DBColumn[columns.size()];
+			for (int i = 0; i < this.columns.size(); i++) {
+				result[i] = columns.get(i);
+			}
+		} else {
+			result = new DBColumn[columnsToGet.length];
+			for (int i = 0; i < columnsToGet.length; i++) {
+				result[i] = columns.get(columnsToGet[i]);
+			}
 		}
 		return result;
 	}

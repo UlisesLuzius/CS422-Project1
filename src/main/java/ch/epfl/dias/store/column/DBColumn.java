@@ -1,17 +1,27 @@
 package ch.epfl.dias.store.column;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import ch.epfl.dias.store.DataType;
 
 public class DBColumn {
 
-	private Object[] values;
+	private ArrayList<Object> values;
 	private DataType type;
 
 	public DBColumn(Object[] values, DataType type) {
-		this.values = values;
+		this.values = new ArrayList<Object>(Arrays.asList(values));
 		this.type = type;
+	}
+
+	public DBColumn(DataType type) {
+		this.values = new ArrayList<Object>();
+		this.type = type;
+	}
+
+	public void add(Object value) {
+		this.values.add(value);
 	}
 
 	public DataType getType() {
@@ -32,5 +42,9 @@ public class DBColumn {
 
 	public String[] getAsString() {
 		return Arrays.asList(this.values).toArray(new String[0]);
+	}
+
+	public Object[] getAsObject() {
+		return Arrays.asList(this.values).toArray(new Object[0]);
 	}
 }

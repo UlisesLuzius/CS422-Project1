@@ -5,20 +5,23 @@ import ch.epfl.dias.store.column.DBColumn;
 
 public class Scan implements VectorOperator {
 
-	// TODO: Add required structures
+	private Store store;
+	private int vectorsize;
+	private int index;
 
 	public Scan(Store store, int vectorsize) {
-		// TODO: Implement
+		this.store = store;
+		this.vectorsize = vectorsize;
 	}
-	
+
 	@Override
 	public void open() {
-		// TODO: Implement
+		this.index = 0;
 	}
 
 	@Override
 	public DBColumn[] next() {
-		// TODO: Implement
+		
 		return null;
 	}
 
