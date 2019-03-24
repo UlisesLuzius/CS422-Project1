@@ -5,28 +5,34 @@ import ch.epfl.dias.store.column.DBColumn;
 
 public class Scan implements VectorOperator {
 
-	private Store store;
-	private int vectorsize;
-	private int index;
+    private int vectorsize;
+    private int fromIndex;
+    private int toIndex;
+    private ColumnStore store;
 
-	public Scan(Store store, int vectorsize) {
-		this.store = store;
-		this.vectorsize = vectorsize;
-	}
+    public Scan(Store store, int vectorsize) {
+        this.store = (ColumnStore) store;
+        this.vectorsize = vectorsize;
+    }
 
-	@Override
-	public void open() {
-		this.index = 0;
-	}
+    @Override
+    public void open() {
+        fromIndex = 0;
+    }
 
-	@Override
-	public DBColumn[] next() {
-		
-		return null;
-	}
+    @Override
+    public DBColumn[] next() {
+        if(fromIndex > store.getColumnSize()) {
+          return null;
+        }
+        int toIndex = Math.min(store.getColumnSize(), fromIndex + vectorsize);
+        DBColumn[] res = store.getColumnsVector(fromIndex, toIndex);
+        fromIndex += vectorsize;
+        return res;
+    }
 
-	@Override
-	public void close() {
-		// TODO: Implement
-	}
+    @Override
+    public void close() {
+        fromIndex = 0;
+    }
 }
