@@ -92,8 +92,8 @@ public class HashJoin implements VolcanoOperator {
 			finalDataTypes[leftLength + i] = rightTypes[i];
 		}
 		for (int i = rightFieldNo + 1; i < rightLength; i++) {
-			finalFields[leftLength + i] = rightFields[i];
-			finalDataTypes[leftLength + i] = rightTypes[i];
+			finalFields[leftLength + i - 1] = rightFields[i];
+			finalDataTypes[leftLength + i - 1] = rightTypes[i];
 		}
 		return new DBTuple(finalFields, finalDataTypes);
 	}
