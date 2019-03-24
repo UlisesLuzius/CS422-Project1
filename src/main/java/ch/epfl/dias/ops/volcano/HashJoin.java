@@ -2,6 +2,7 @@ package ch.epfl.dias.ops.volcano;
 
 import ch.epfl.dias.ops.BinaryOp;
 import ch.epfl.dias.store.DataType;
+import ch.epfl.dias.store.column.DBColumn;
 import ch.epfl.dias.store.row.DBTuple;
 
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ public class HashJoin implements VolcanoOperator {
 		this.leftChild.open();
 		this.rightChild.open();
 
+		this.buildHashMap();
+
+	}
+
+	public void buildHashMap() {
 		DBTuple currentRight = rightChild.next();
 		while (!currentRight.eof) {
 			int currentValue = currentRight.getFieldAsInt(rightFieldNo);
@@ -81,13 +87,13 @@ public class HashJoin implements VolcanoOperator {
 			finalDataTypes[i] = leftTypes[i];
 		}
 
-		for (int j = 0; j < rightLength; j++) {
-			if (j == rightFieldNo) {
-				j++;
-			} else {
-				finalFields[leftLength + j] = rightFields[j];
-				finalDataTypes[leftLength + j] = rightTypes[j];
-			}
+		for (int i = 0; i < rightFieldNo; i++) {
+			finalFields[leftLength + i] = rightFields[i];
+			finalDataTypes[leftLength + i] = rightTypes[i];
+		}
+		for (int i = rightFieldNo + 1; i < rightLength; i++) {
+			finalFields[leftLength + i] = rightFields[i];
+			finalDataTypes[leftLength + i] = rightTypes[i];
 		}
 		return new DBTuple(finalFields, finalDataTypes);
 	}
