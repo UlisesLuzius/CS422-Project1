@@ -9,23 +9,31 @@ public class DBColumn {
 
 	private ArrayList<Object> values;
 	private DataType type;
+	private int size;
 
 	public DBColumn(Object[] values, DataType type) {
 		this.values = new ArrayList<Object>(Arrays.asList(values));
 		this.type = type;
+		this.size = values.length;
 	}
 
 	public DBColumn(DataType type) {
 		this.values = new ArrayList<Object>();
 		this.type = type;
+		this.size = 0;
 	}
 
 	public void add(Object value) {
 		this.values.add(value);
+		this.size++;
 	}
 
 	public DataType getType() {
 		return this.type;
+	}
+
+	public int size() {
+		return this.size;
 	}
 
 	public Integer[] getAsInteger() {
