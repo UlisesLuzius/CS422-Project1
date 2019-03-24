@@ -1,6 +1,7 @@
 package ch.epfl.dias.store.column;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 
 import ch.epfl.dias.store.DataType;
@@ -12,7 +13,7 @@ public class DBColumn {
 	private int size;
 
 	public DBColumn(Object[] values, DataType type) {
-    this.values = values;
+		this.values = Arrays.asList(values);
 		this.type = type;
 		this.size = values.length;
 	}
@@ -41,7 +42,7 @@ public class DBColumn {
 	}
 
 	public Object[] getAsObject() {
-		return values;
+		return values.toArray();
 	}
 
 	public Integer[] getAsInteger() {
@@ -59,6 +60,5 @@ public class DBColumn {
 	public String[] getAsString() {
 		return Arrays.asList(values).toArray(new String[0]);
 	}
-
 
 }
