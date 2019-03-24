@@ -7,12 +7,12 @@ import ch.epfl.dias.store.DataType;
 
 public class DBColumn {
 
-	private ArrayList<Object> values;
+	private List<Object> values;
 	private DataType type;
 	private int size;
 
 	public DBColumn(Object[] values, DataType type) {
-		this.values = new ArrayList<Object>(Arrays.asList(values));
+    this.values = values;
 		this.type = type;
 		this.size = values.length;
 	}
@@ -29,34 +29,36 @@ public class DBColumn {
 	}
 
 	public DataType getType() {
-		return this.type;
+		return type;
 	}
 
 	public int size() {
-		return this.size;
+		return size;
 	}
-	
+
 	public Object get(int i) {
-		return this.values.get(i);
-	}
-
-	public Integer[] getAsInteger() {
-		return Arrays.asList(this.values).toArray(new Integer[0]);
-	}
-
-	public Double[] getAsDouble() {
-		return Arrays.asList(this.values).toArray(new Double[0]);
-	}
-
-	public Boolean[] getAsBoolean() {
-		return Arrays.asList(this.values).toArray(new Boolean[0]);
-	}
-
-	public String[] getAsString() {
-		return Arrays.asList(this.values).toArray(new String[0]);
+		return values.get(i);
 	}
 
 	public Object[] getAsObject() {
-		return Arrays.asList(this.values).toArray(new Object[0]);
+		return values;
 	}
+
+	public Integer[] getAsInteger() {
+		return Arrays.asList(values).toArray(new Integer[0]);
+	}
+
+	public Double[] getAsDouble() {
+		return Arrays.asList(values).toArray(new Double[0]);
+	}
+
+	public Boolean[] getAsBoolean() {
+		return Arrays.asList(values).toArray(new Boolean[0]);
+	}
+
+	public String[] getAsString() {
+		return Arrays.asList(values).toArray(new String[0]);
+	}
+
+
 }
