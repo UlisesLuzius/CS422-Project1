@@ -35,6 +35,7 @@ public class ProjectAggregate implements VolcanoOperator {
 		DBTuple current = this.child.next();
 		while (!current.eof) {
 			update(current);
+			current = this.child.next();
 		}
 	}
 

@@ -26,11 +26,9 @@ public class Select implements VolcanoOperator {
 	public DBTuple next() {
 		boolean select = false;
 		DBTuple tuple = this.child.next();
-		int fieldValue = tuple.getFieldAsInt(fieldNo);
 
-		while (!(select = filter(fieldValue, this.op, this.value)) && !tuple.eof) {
+		while (!tuple.eof && !(select = filter(tuple.getFieldAsInt(fieldNo), this.op, this.value))) {
 			tuple = child.next();
-			fieldValue = tuple.getFieldAsInt(fieldNo);
 		}
 		return tuple;
 	}

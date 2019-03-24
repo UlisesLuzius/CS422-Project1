@@ -23,12 +23,18 @@ public class HashJoin implements VolcanoOperator {
 	private ArrayList<DBTuple> currentRightTuples;
 	private Iterator<DBTuple> iter;
 	private DBTuple currentLeft;
+	private boolean inTuple;
+	private int rightIndex;
 
 	public HashJoin(VolcanoOperator leftChild, VolcanoOperator rightChild, int leftFieldNo, int rightFieldNo) {
 		this.leftChild = leftChild;
 		this.rightChild = rightChild;
 		this.leftFieldNo = leftFieldNo;
 		this.rightFieldNo = rightFieldNo;
+		this.hashMap = new HashMap<Integer, ArrayList<DBTuple>>();
+		this.currentRightTuples = new ArrayList<DBTuple>();
+		this.iter = this.currentRightTuples.iterator();
+		this.rightIndex = 0;
 	}
 
 	@Override
@@ -47,20 +53,37 @@ public class HashJoin implements VolcanoOperator {
 			ArrayList<DBTuple> tuples = this.hashMap.getOrDefault(currentValue, new ArrayList<DBTuple>());
 			tuples.add(currentRight);
 			this.hashMap.put(currentValue, tuples);
+			currentRight = rightChild.next();
 		}
 	}
 
 	@Override
 	public DBTuple next() {
-		while (this.currentRightTuples == null) {
-			this.currentLeft = leftChild.next();
-			this.currentRightTuples = hashMap.get(this.currentLeft.getFieldAsInt(leftFieldNo));
-			this.iter = this.currentRightTuples.iterator();
-		}
-		if (iter.hasNext()) {
-			return join(this.currentLeft, iter.next());
+		if (this.inTuple) {
+			return this.nextInMap();
 		} else {
-			return this.next();
+			return this.nextBatch();
+		}
+	}
+
+	private DBTuple nextBatch() {
+		this.currentLeft = leftChild.next();
+		if (this.currentLeft.eof) {
+			return this.currentLeft;
+		}
+		this.inTuple = true;
+		this.rightIndex = 0;
+		this.currentRightTuples = hashMap.get(this.currentLeft.getFieldAsInt(leftFieldNo));
+		this.iter = this.currentRightTuples.iterator();
+
+		return nextInMap();
+	}
+
+	private DBTuple nextInMap() {
+		if (iter.hasNext()) {
+			return join(this.currentLeft, this.iter.next());
+		} else {
+			return this.nextBatch();
 		}
 	}
 
