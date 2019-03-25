@@ -55,27 +55,40 @@ public class Join implements VectorOperator {
 			}
 		}
 		DBColumn[] res = new DBColumn[leftColumns.length + rightColumns.length];
+		for (int i = 0; i < leftColumns.length + rightColumns.length - 1; i++) {
+			if (i < leftColumns.length) {
+				res[i] = new DBColumn(leftColumns[i].getType());
+			} else if (i < leftColumns.length + rightFieldNo) {
+				res[i] = new DBColumn(rightColumns[i - leftColumns.length].getType());
+			} else {
+				res[i] = new DBColumn(rightColumns[i - leftColumns.length + 1].getType());
+			}
+		}
 		int vectorsize = Math.max(leftColumns[leftFieldNo].size(), rightColumns[rightFieldNo].size());
 		int matchs = 0;
 		while (leftColumns != null && matchs < vectorsize) {
 			HashMap<Integer, ArrayList<Integer>> hashTable = buildHashTable(leftColumns[leftFieldNo]);
-			
-			while (rightIdx < rightColumns[rightFieldNo].size() && matchs < vectorsize) {	
+
+			while (rightIdx < rightColumns[rightFieldNo].size() && matchs < vectorsize) {
 				ArrayList<Integer> indices = hashTable.getOrDefault(rightColumns[rightFieldNo].get(rightIdx), null);
-				if(indices != null) {
+				if (indices != null) {
 					for (int j = 0; j < indices.size(); j++) {
 						for (int i = 0; i < leftColumns.length; i++) {
-							res[i].add(leftColumns[i].get(indices.get(j)));
+							res[i].add(leftColumns[i].get(leftIdx));
 						}
-						for (int i = leftColumns.length; i < leftColumns.length + rightColumns.length; i++) {
-							res[i].add(rightColumns[i].get(rightIdx));
+						for (int i = leftColumns.length; i < leftColumns.length + rightFieldNo; i++) {
+							res[i].add(rightColumns[i - leftColumns.length].get(rightIdx));
+						}
+						for (int i = leftColumns.length + rightFieldNo; i < leftColumns.length + rightColumns.length
+								- 1; i++) {
+							res[i].add(rightColumns[i - leftColumns.length + 1].get(rightIdx));
 						}
 					}
 				}
 				rightColumns = rightChild.next();
 				rightIdx++;
 			}
-			
+
 			if (matchs < vectorsize) {
 				leftColumns = leftChild.next();
 				leftIdx++;
@@ -94,7 +107,7 @@ public class Join implements VectorOperator {
 		leftIdx = 0;
 		rightIdx = 0;
 	}
-	
+
 	private HashMap<Integer, ArrayList<Integer>> buildHashTable(DBColumn column) {
 		HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap<Integer, ArrayList<Integer>>();
 
