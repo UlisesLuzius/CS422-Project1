@@ -42,7 +42,7 @@ public class ProjectAggregate implements VectorOperator {
 					res += (Double) col[fieldNo].get(i);
 				}
 			} while ((col = child.next()) != null);
-			
+			break;
 		case MIN:
 			res = Double.MAX_VALUE;
 			do {
@@ -71,7 +71,14 @@ public class ProjectAggregate implements VectorOperator {
 			do {
 				count += col[fieldNo].size();
 				for (int i = 0; i < col[fieldNo].size(); i++) {
-					res += (Double) col[fieldNo].get(i);
+					switch (dt) {
+					case INT:
+						res += (Integer) col[fieldNo].get(i);
+						break;
+					case DOUBLE:
+						res += (Double) col[fieldNo].get(i);
+						break;
+					}
 				}
 			} while ((col = child.next()) != null);
 			break;
