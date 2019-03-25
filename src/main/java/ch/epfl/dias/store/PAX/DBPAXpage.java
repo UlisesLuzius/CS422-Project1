@@ -17,7 +17,9 @@ public class DBPAXpage {
 		for (int j = 0; j < fields[0].length; j++) {
 			ArrayList<Object> values = new ArrayList<Object>();
 			for (int i = 0; i < fields.length; i++) {
-				values.add(fields[i][j]);
+				if (fields[i][j] != null) {
+					values.add(fields[i][j]);
+				}
 			}
 			DBColumn column = new DBColumn(values.toArray(), types[j]);
 			columns.add(column);

@@ -46,15 +46,13 @@ public class PAXStore extends Store {
 
 		int numPages = (int) Math.ceil((double) rows.size() / (double) tuplesPerPage);
 
-		Object[][] temp = new Object[rows.size()][rows.get(0).length];
-		for (int i = 0; i < rows.size(); i++) {
-			temp[i] = rows.get(i).clone();
-		}
-		System.out.println(temp);
 		for (int i = 0; i < numPages; i++) {
 			Object[][] pageArray = new Object[tuplesPerPage][rows.get(0).length];
 			for (int j = 0; j < tuplesPerPage; j++) {
-				pageArray[j] = rows.get(i * tuplesPerPage + j);
+				int index = i * tuplesPerPage + j;
+				if (index < rows.size()) {
+					pageArray[j] = rows.get(index);
+				}
 			}
 			pages.add(new DBPAXpage(pageArray, this.schema));
 		}
