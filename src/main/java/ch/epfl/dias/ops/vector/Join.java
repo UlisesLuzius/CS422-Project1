@@ -13,25 +13,33 @@ import java.util.stream.Stream;
 
 public class Join implements VectorOperator {
 
-	// TODO: Add required structures
+    private VectorOperator leftChild;
+    private VectorOperator rightChild;
+    private int leftFieldNo;
+    private int rightFieldNo;
 
-	public Join(VectorOperator leftChild, VectorOperator rightChild, int leftFieldNo, int rightFieldNo) {
-		// TODO: Implement
-	}
+    public Join(VectorOperator leftChild, VectorOperator rightChild, int leftFieldNo, int rightFieldNo) {
+        this.leftChild = leftChild;
+        this.rightChild = rightChild;
+        this.leftFieldNo = leftFieldNo;
+        this.rightFieldNo = rightFieldNo;
+    }
 
-	@Override
-	public void open() {
-		// TODO: Implement
-	}
+    @Override
+    public void open() {
+        // TODO: Implement
+        leftChild.open();
+        rightChild.open():
+    }
 
-	@Override
-	public DBColumn[] next() {
-		// TODO: Implement
-		return null;
-	}
+    @Override
+    public DBColumn[] next() {
+        // TODO: Implement
+        return null;
+    }
 
-	@Override
-	public void close() {
-		// TODO: Implement
-	}
+    @Override
+    public void close() {
+        // TODO: Implement
+    }
 }

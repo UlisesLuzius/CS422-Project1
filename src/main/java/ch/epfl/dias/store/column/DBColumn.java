@@ -24,6 +24,13 @@ public class DBColumn {
 		this.size = 0;
 	}
 
+	public DBColumn() {
+  }
+
+  public void setType(DataType type) {
+    this.type = type;
+  }
+
 	public void add(Object value) {
 		this.values.add(value);
 		this.size++;
