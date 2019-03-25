@@ -54,7 +54,8 @@ public class Join implements VectorOperator {
 				return null;
 			}
 		}
-		DBColumn[] res = new DBColumn[leftColumns.length + rightColumns.length];
+
+		DBColumn[] res = new DBColumn[leftColumns.length + rightColumns.length - 1];
 		for (int i = 0; i < leftColumns.length + rightColumns.length - 1; i++) {
 			if (i < leftColumns.length) {
 				res[i] = new DBColumn(leftColumns[i].getType());
@@ -64,37 +65,41 @@ public class Join implements VectorOperator {
 				res[i] = new DBColumn(rightColumns[i - leftColumns.length + 1].getType());
 			}
 		}
+
 		int vectorsize = Math.max(leftColumns[leftFieldNo].size(), rightColumns[rightFieldNo].size());
 		int matchs = 0;
 		while (leftColumns != null && matchs < vectorsize) {
-			HashMap<Integer, ArrayList<Integer>> hashTable = buildHashTable(leftColumns[leftFieldNo]);
-
-			while (rightIdx < rightColumns[rightFieldNo].size() && matchs < vectorsize) {
-				ArrayList<Integer> indices = hashTable.getOrDefault(rightColumns[rightFieldNo].get(rightIdx), null);
-				if (indices != null) {
-					for (int j = 0; j < indices.size(); j++) {
-						for (int i = 0; i < leftColumns.length; i++) {
-							res[i].add(leftColumns[i].get(indices.get(j)));
-						}
-						for (int i = leftColumns.length; i < leftColumns.length + rightFieldNo; i++) {
-							res[i].add(rightColumns[i - leftColumns.length].get(rightIdx));
-						}
-						for (int i = leftColumns.length + rightFieldNo; i < leftColumns.length + rightColumns.length
-								- 1; i++) {
-							res[i].add(rightColumns[i - leftColumns.length + 1].get(rightIdx));
+			while (rightColumns != null && matchs < vectorsize) {
+				HashMap<Integer, ArrayList<Integer>> hashTable = buildHashTable(rightColumns[rightFieldNo]);
+				while (leftIdx < leftColumns[leftFieldNo].size() && matchs < vectorsize) {
+					ArrayList<Integer> indices = hashTable.getOrDefault(leftColumns[leftFieldNo].get(leftIdx), null);
+					if (indices != null) {
+						matchs+=indices.size();
+						for (int j = 0; j < indices.size(); j++) {
+							for (int i = 0; i < leftColumns.length + rightColumns.length - 1; i++) {
+								if (i < leftColumns.length) {
+									res[i].add(leftColumns[i].get(leftIdx));
+								} else if (i < leftColumns.length + rightFieldNo) {
+									res[i].add(rightColumns[i - leftColumns.length].get(indices.get(j)));
+								} else {
+									res[i].add(rightColumns[i - leftColumns.length + 1].get(indices.get(j)));
+								}
+							}
 						}
 					}
+					if(matchs < vectorsize) {
+						leftIdx++;						
+					}
 				}
-				rightColumns = rightChild.next();
-				rightIdx++;
+				if(matchs < vectorsize) {
+					rightColumns = rightChild.next();					
+				}
 			}
-
 			if (matchs < vectorsize) {
 				leftColumns = leftChild.next();
-				leftIdx++;
 				rightChild.close();
 				rightChild.open();
-				rightIdx = 0;
+				rightColumns = rightChild.next();
 			}
 		}
 		return res;
