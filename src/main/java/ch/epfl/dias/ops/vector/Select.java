@@ -10,6 +10,7 @@ public class Select implements VectorOperator {
 	private int fieldNo;
 	private int value;
 	private int idx;
+	DBColumn[] columns;
 
 	public Select(VectorOperator child, BinaryOp op, int fieldNo, int value) {
 		this.child = child;
@@ -26,15 +27,17 @@ public class Select implements VectorOperator {
 
 	@Override
 	public DBColumn[] next() {
-		DBColumn[] columns = child.next();
-		if (columns == null) {
-			return null;
+		if(idx == 0) {
+			columns = child.next();	
+			if (columns == null) {
+				return null;
+			}
 		}
 		DBColumn[] res = new DBColumn[columns.length];
-		int matchs = 0;
 		int vectorsize = columns[fieldNo].size();
+		int matchs = 0;
 		while (columns != null && matchs < vectorsize) {
-			while (idx < columns[fieldNo].size() && matchs < columns[fieldNo].size()) {
+			while (idx < columns[fieldNo].size() && matchs < vectorsize) {
 				if (filter((Integer) columns[fieldNo].get(idx), op, value)) {
 					matchs++;
 					for (int i = 0; i < columns.length; i++) {
