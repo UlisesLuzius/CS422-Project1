@@ -29,7 +29,7 @@ public class PAXStore extends Store {
 		this.tuplesPerPage = tuplesPerPage;
 		this.pages = new ArrayList<DBPAXpage>();
 	}
-	
+
 	@Override
 	public void load() throws IOException {
 		File file = new File("input/" + this.filename);
@@ -46,7 +46,11 @@ public class PAXStore extends Store {
 
 		int numPages = (int) Math.ceil((double) rows.size() / (double) tuplesPerPage);
 
-		Object[][] temp = (Object[][]) rows.toArray();
+		Object[][] temp = new Object[rows.size()][rows.get(0).length];
+		for (int i = 0; i < rows.size(); i++) {
+			temp[i] = rows.get(i);
+		}
+		System.out.println(temp);
 		for (int i = 0; i < numPages; i++) {
 			Object[][] pageArray = Arrays.copyOfRange(temp, i * tuplesPerPage, (i + 1) * tuplesPerPage);
 			pages.add(new DBPAXpage(pageArray, this.schema));

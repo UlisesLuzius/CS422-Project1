@@ -15,7 +15,7 @@ public class DBPAXpage {
 		this.types = types;
 
 		for (int j = 0; j < fields[0].length; j++) {
-			ArrayList<Object> values = new ArrayList<>();
+			ArrayList<Object> values = new ArrayList<Object>();
 			for (int i = 0; i < fields.length; i++) {
 				values.add(fields[i][j]);
 			}
@@ -23,10 +23,10 @@ public class DBPAXpage {
 			columns.add(column);
 		}
 	}
-	
+
 	public DBTuple getTuple(int rowNumber) {
 		Object[] fields = new Object[columns.size()];
-		for(int i = 0; i<columns.size(); i++) {
+		for (int i = 0; i < columns.size(); i++) {
 			switch (this.types[i]) {
 			case INT:
 				fields[i] = columns.get(i).getAsInteger()[rowNumber];
@@ -44,10 +44,10 @@ public class DBPAXpage {
 				// ????????????????
 				fields[i] = columns.get(i).getAsString()[rowNumber];
 				break;
-			}					
-			
+			}
+
 		}
-		
+
 		return new DBTuple(fields, types);
 	}
 }
