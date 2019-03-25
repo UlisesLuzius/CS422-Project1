@@ -1,27 +1,26 @@
-package ch.epfl.dias.ops.columnar;
+package ch.epfl.dias.ops.volcano;
 
 import ch.epfl.dias.ops.Aggregate;
 import ch.epfl.dias.ops.BinaryOp;
 import ch.epfl.dias.store.DataType;
-import ch.epfl.dias.store.column.ColumnStore;
-import ch.epfl.dias.store.column.DBColumn;
-
-import static org.junit.Assert.assertTrue;
+import ch.epfl.dias.store.row.DBTuple;
+import ch.epfl.dias.store.row.RowStore;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class ColumnarSpeedTest {
+public class VolcanoSpeedTest {
 
 	DataType[] orderSchema;
 	DataType[] lineitemSchema;
 	DataType[] schema;
 
-	ColumnStore columnstoreData;
-	ColumnStore columnstoreOrder;
-	ColumnStore columnstoreLineItem;
+	RowStore rowstoreData;
+	RowStore rowstoreOrder;
+	RowStore rowstoreLineItem;
 
 	@Before
 	public void init() throws IOException {
@@ -36,14 +35,14 @@ public class ColumnarSpeedTest {
 				DataType.DOUBLE, DataType.DOUBLE, DataType.DOUBLE, DataType.STRING, DataType.STRING, DataType.STRING,
 				DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING };
 
-		columnstoreData = new ColumnStore(schema, "input/data.csv", ",");
-		columnstoreData.load();
+		rowstoreData = new RowStore(schema, "input/data.csv", ",");
+		rowstoreData.load();
 
-		columnstoreOrder = new ColumnStore(orderSchema, "input/orders_big.csv", "\\|");
-		columnstoreOrder.load();
+		rowstoreOrder = new RowStore(orderSchema, "input/orders_big.csv", "\\|");
+		rowstoreOrder.load();
 
-		columnstoreLineItem = new ColumnStore(lineitemSchema, "input/lineitem_big.csv", "\\|");
-		columnstoreLineItem.load();
+		rowstoreLineItem = new RowStore(lineitemSchema, "input/lineitem_big.csv", "\\|");
+		rowstoreLineItem.load();
 	}
 
 	private long test1() {
@@ -52,18 +51,22 @@ public class ColumnarSpeedTest {
 		 * SELECT l_partkey, l_comment FROM lineitem WHERE l_quantity > 20
 		 */
 
-		ch.epfl.dias.ops.columnar.Scan scanLineitem = new ch.epfl.dias.ops.columnar.Scan(columnstoreLineItem);
+		ch.epfl.dias.ops.volcano.Scan scanLineitem = new ch.epfl.dias.ops.volcano.Scan(rowstoreLineItem);
 
 		/* Filtering on both sides */
-		ch.epfl.dias.ops.columnar.Select selLineitem = new ch.epfl.dias.ops.columnar.Select(scanLineitem, BinaryOp.LT,
-				4, 20);
+		ch.epfl.dias.ops.volcano.Select selLineitem = new ch.epfl.dias.ops.volcano.Select(scanLineitem, BinaryOp.LT, 4,
+				20);
 		int[] columns = new int[] { 1, 15 };
-		ch.epfl.dias.ops.columnar.Project projectLineitem = new ch.epfl.dias.ops.columnar.Project(selLineitem, columns);
+		ch.epfl.dias.ops.volcano.Project projectLineitem = new ch.epfl.dias.ops.volcano.Project(selLineitem, columns);
 
-		DBColumn[] result = projectLineitem.execute();
-
+		ArrayList<DBTuple> result = new ArrayList<DBTuple>();
+		DBTuple current = projectLineitem.next();
+		while (!current.eof) {
+			result.add(current);
+			current = projectLineitem.next();
+		}
 		long finish = System.currentTimeMillis();
-		System.out.println(result[0].size());
+		System.out.println(result.size());
 		return finish - start;
 	}
 
@@ -74,17 +77,21 @@ public class ColumnarSpeedTest {
 		 * WHERE orderkey = 3;
 		 */
 
-		ch.epfl.dias.ops.columnar.Scan scanLineitem = new ch.epfl.dias.ops.columnar.Scan(columnstoreLineItem);
-		ch.epfl.dias.ops.columnar.Scan scanOrder = new ch.epfl.dias.ops.columnar.Scan(columnstoreOrder);
+		ch.epfl.dias.ops.volcano.Scan scanLineitem = new ch.epfl.dias.ops.volcano.Scan(rowstoreLineItem);
+		ch.epfl.dias.ops.volcano.Scan scanOrder = new ch.epfl.dias.ops.volcano.Scan(rowstoreOrder);
 
 		/* Filtering on both sides */
-		ch.epfl.dias.ops.columnar.Join join = new ch.epfl.dias.ops.columnar.Join(scanLineitem, scanOrder, 0, 0);
-		ch.epfl.dias.ops.columnar.Project project = new ch.epfl.dias.ops.columnar.Project(join, new int[] { 15, 23 });
+		ch.epfl.dias.ops.volcano.HashJoin join = new ch.epfl.dias.ops.volcano.HashJoin(scanLineitem, scanOrder, 0, 0);
+		ch.epfl.dias.ops.volcano.Project project = new ch.epfl.dias.ops.volcano.Project(join, new int[] { 15, 23 });
 
-		DBColumn[] result = project.execute();
-
+		ArrayList<DBTuple> result = new ArrayList<DBTuple>();
+		DBTuple current = project.next();
+		while (!current.eof) {
+			result.add(current);
+			current = project.next();
+		}
 		long finish = System.currentTimeMillis();
-		System.out.println(result[0].size());
+		System.out.println(result.size());
 		return finish - start;
 	}
 
@@ -94,19 +101,19 @@ public class ColumnarSpeedTest {
 		 * SELECT AVG(l_quantity) FROM lineitem WHERE l_quantity > 10
 		 */
 
-		ch.epfl.dias.ops.columnar.Scan scanLineitem = new ch.epfl.dias.ops.columnar.Scan(columnstoreLineItem);
+		ch.epfl.dias.ops.volcano.Scan scanLineitem = new ch.epfl.dias.ops.volcano.Scan(rowstoreLineItem);
 
 		/* Filtering */
-		ch.epfl.dias.ops.columnar.Select selLineitem = new ch.epfl.dias.ops.columnar.Select(scanLineitem, BinaryOp.LT,
-				4, 10);
+		ch.epfl.dias.ops.volcano.Select selLineitem = new ch.epfl.dias.ops.volcano.Select(scanLineitem, BinaryOp.LT, 4,
+				10);
 
-		ch.epfl.dias.ops.columnar.ProjectAggregate agg = new ch.epfl.dias.ops.columnar.ProjectAggregate(selLineitem,
+		ch.epfl.dias.ops.volcano.ProjectAggregate agg = new ch.epfl.dias.ops.volcano.ProjectAggregate(selLineitem,
 				Aggregate.AVG, DataType.INT, 4);
 
-		DBColumn[] result = agg.execute();
+		DBTuple result = agg.next();
 
 		long finish = System.currentTimeMillis();
-		System.out.println(result[0].size());
+
 		return finish - start;
 	}
 
@@ -120,7 +127,7 @@ public class ColumnarSpeedTest {
 			runningTimes[2] = runningTimes[2] + test3();
 		}
 
-		System.out.println("Columnar store takes on average " + runningTimes[0] / 5000.0 + "s for query1, "
+		System.out.println("volcano store takes on average " + runningTimes[0] / 5000.0 + "s for query1, "
 				+ runningTimes[1] / 5000.0 + "s for query2 and " + runningTimes[2] / 5000.0 + "s for query3");
 	}
 }
