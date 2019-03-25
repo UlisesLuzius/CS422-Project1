@@ -27,13 +27,16 @@ public class Select implements VectorOperator {
 
 	@Override
 	public DBColumn[] next() {
-		if(idx == 0) {
-			columns = child.next();	
+		if (idx == 0) {
+			columns = child.next();
 			if (columns == null) {
 				return null;
 			}
 		}
 		DBColumn[] res = new DBColumn[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			res[i] = new DBColumn(columns[i].getType());
+		}
 		int vectorsize = columns[fieldNo].size();
 		int matchs = 0;
 		while (columns != null && matchs < vectorsize) {
@@ -46,7 +49,7 @@ public class Select implements VectorOperator {
 				}
 				idx++;
 			}
-			if(matchs < vectorsize) {
+			if (matchs < vectorsize) {
 				columns = child.next();
 				idx = 0;
 			}
