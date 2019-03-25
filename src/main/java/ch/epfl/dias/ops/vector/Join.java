@@ -58,27 +58,33 @@ public class Join implements VectorOperator {
 		int vectorsize = Math.max(leftColumns[leftFieldNo].size(), rightColumns[rightFieldNo].size());
 		int matchs = 0;
 		while (leftColumns != null && matchs < vectorsize) {
-			List<Object> hashTable = Arrays.asList(leftColumns[leftFieldNo].getAsObject());
-			while (rightIdx < rightColumns[rightFieldNo].size() && matchs < vectorsize) {
-				if (hashTable.contains(rightColumns[rightFieldNo].get(rightIdx))) {
-					matchs++;
-					for (int i = 0; i < leftColumns.length; i++) {
-						res[i].add(leftColumns[i].get(leftIdx));
+			HashMap<Integer, ArrayList<Integer>> hashTable = buildHashTable(leftColumns[leftFieldNo]);
+			
+			while (rightIdx < rightColumns[rightFieldNo].size() && matchs < vectorsize) {	
+				ArrayList<Integer> indices = hashTable.getOrDefault(rightColumns[rightFieldNo].get(rightIdx), null);
+				if(indices != null) {
+					for (int j = 0; j < indices.size(); j++) {
+						for (int i = 0; i < leftColumns.length; i++) {
+							res[i].add(leftColumns[i].get(indices.get(j)));
+						}
+						for (int i = leftColumns.length; i < leftColumns.length + rightColumns.length; i++) {
+							res[i].add(rightColumns[i].get(rightIdx));
+						}
 					}
-					for (int i = leftColumns.length; i < leftColumns.length + rightColumns.length; i++) {
-						res[i].add(leftColumns[i].get(rightIdx));
-					}
-					rightIdx++;
 				}
+				rightColumns = rightChild.next();
+				rightIdx++;
 			}
+			
 			if (matchs < vectorsize) {
 				leftColumns = leftChild.next();
 				leftIdx++;
+				rightChild.close();
+				rightChild.open();
 				rightIdx = 0;
 			}
 		}
 		return res;
-
 	}
 
 	@Override
@@ -87,5 +93,19 @@ public class Join implements VectorOperator {
 		rightChild.close();
 		leftIdx = 0;
 		rightIdx = 0;
+	}
+	
+	private HashMap<Integer, ArrayList<Integer>> buildHashTable(DBColumn column) {
+		HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap<Integer, ArrayList<Integer>>();
+
+		Integer[] rightValues = column.getAsInteger();
+
+		for (int i = 0; i < rightValues.length; i++) {
+			int currentValue = rightValues[i];
+			ArrayList<Integer> indices = hashMap.getOrDefault(currentValue, new ArrayList<Integer>());
+			indices.add(i);
+			hashMap.put(currentValue, indices);
+		}
+		return hashMap;
 	}
 }
