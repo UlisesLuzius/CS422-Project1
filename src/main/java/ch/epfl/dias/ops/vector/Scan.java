@@ -6,10 +6,10 @@ import ch.epfl.dias.store.column.DBColumn;
 
 public class Scan implements VectorOperator {
 
-	private int vectorsize;
+	private final int vectorsize;
+	private final ColumnStore store;
 	private int fromIndex;
-	private ColumnStore store;
-
+	
 	public Scan(Store store, int vectorsize) {
 		this.store = (ColumnStore) store;
 		this.vectorsize = vectorsize;
@@ -22,7 +22,7 @@ public class Scan implements VectorOperator {
 
 	@Override
 	public DBColumn[] next() {
-		if (fromIndex > store.getColumnSize()) {
+		if (fromIndex >= store.getColumnSize()) {
 			return null;
 		}
 		int toIndex = Math.min(store.getColumnSize(), fromIndex + vectorsize);
