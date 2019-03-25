@@ -48,11 +48,14 @@ public class PAXStore extends Store {
 
 		Object[][] temp = new Object[rows.size()][rows.get(0).length];
 		for (int i = 0; i < rows.size(); i++) {
-			temp[i] = rows.get(i);
+			temp[i] = rows.get(i).clone();
 		}
 		System.out.println(temp);
 		for (int i = 0; i < numPages; i++) {
-			Object[][] pageArray = Arrays.copyOfRange(temp, i * tuplesPerPage, (i + 1) * tuplesPerPage);
+			Object[][] pageArray = new Object[tuplesPerPage][rows.get(0).length];
+			for (int j = 0; j < tuplesPerPage; j++) {
+				pageArray[j] = rows.get(i * tuplesPerPage + j);
+			}
 			pages.add(new DBPAXpage(pageArray, this.schema));
 		}
 
