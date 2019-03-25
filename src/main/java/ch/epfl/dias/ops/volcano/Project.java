@@ -31,9 +31,9 @@ public class Project implements VolcanoOperator {
 			DataType[] newTypes = new DataType[fieldNo.length];
 			DataType[] oldTypes = tuple.getTypes();
 
-			for (int i : fieldNo) {
-				fields[i] = tuple.getFieldAsObject(i);
-				newTypes[i] = oldTypes[i];
+			for (int i = 0; i < fieldNo.length; i++) {
+				fields[i] = tuple.getFieldAsObject(fieldNo[i]);
+				newTypes[i] = oldTypes[fieldNo[i]];
 			}
 			return new DBTuple(fields, newTypes);
 		}
