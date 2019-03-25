@@ -36,13 +36,13 @@ public class VolcanoSpeedTestPAX {
 				DataType.DOUBLE, DataType.DOUBLE, DataType.DOUBLE, DataType.STRING, DataType.STRING, DataType.STRING,
 				DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING };
 
-		paxstoreData = new PAXStore(schema, "input/data.csv", ",",standardVectorsize);
+		paxstoreData = new PAXStore(schema, "input/data.csv", ",", standardVectorsize);
 		paxstoreData.load();
 
-		paxstoreOrder = new PAXStore(orderSchema, "input/orders_big.csv", "\\|",standardVectorsize);
+		paxstoreOrder = new PAXStore(orderSchema, "input/orders_big.csv", "\\|", standardVectorsize);
 		paxstoreOrder.load();
 
-		paxstoreLineItem = new PAXStore(lineitemSchema, "input/lineitem_big.csv", "\\|",standardVectorsize);
+		paxstoreLineItem = new PAXStore(lineitemSchema, "input/lineitem_big.csv", "\\|", standardVectorsize);
 		paxstoreLineItem.load();
 	}
 
@@ -61,11 +61,13 @@ public class VolcanoSpeedTestPAX {
 		ch.epfl.dias.ops.volcano.Project projectLineitem = new ch.epfl.dias.ops.volcano.Project(selLineitem, columns);
 
 		ArrayList<DBTuple> result = new ArrayList<DBTuple>();
+		projectLineitem.open();
 		DBTuple current = projectLineitem.next();
 		while (!current.eof) {
 			result.add(current);
 			current = projectLineitem.next();
 		}
+		projectLineitem.close();
 		long finish = System.currentTimeMillis();
 		System.out.println(result.size());
 		return finish - start;
@@ -86,11 +88,13 @@ public class VolcanoSpeedTestPAX {
 		ch.epfl.dias.ops.volcano.Project project = new ch.epfl.dias.ops.volcano.Project(join, new int[] { 15, 23 });
 
 		ArrayList<DBTuple> result = new ArrayList<DBTuple>();
+		project.open();
 		DBTuple current = project.next();
 		while (!current.eof) {
 			result.add(current);
 			current = project.next();
 		}
+		project.close();
 		long finish = System.currentTimeMillis();
 		System.out.println(result.size());
 		return finish - start;
@@ -110,9 +114,9 @@ public class VolcanoSpeedTestPAX {
 
 		ch.epfl.dias.ops.volcano.ProjectAggregate agg = new ch.epfl.dias.ops.volcano.ProjectAggregate(selLineitem,
 				Aggregate.AVG, DataType.INT, 4);
-
+		agg.open();
 		DBTuple result = agg.next();
-
+		agg.close();
 		long finish = System.currentTimeMillis();
 
 		return finish - start;

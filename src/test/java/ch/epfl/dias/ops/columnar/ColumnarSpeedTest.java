@@ -59,7 +59,7 @@ public class ColumnarSpeedTest {
 				4, 20);
 		int[] columns = new int[] { 1, 15 };
 		ch.epfl.dias.ops.columnar.Project projectLineitem = new ch.epfl.dias.ops.columnar.Project(selLineitem, columns);
-
+		
 		DBColumn[] result = projectLineitem.execute();
 
 		long finish = System.currentTimeMillis();
