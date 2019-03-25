@@ -25,6 +25,9 @@ public class DBColumn {
 	}
 
 	public DBColumn() {
+		this.values = new ArrayList<Object>();
+		//this.type = DataType.INT;
+		this.size = 0;
   }
 
   public void setType(DataType type) {
