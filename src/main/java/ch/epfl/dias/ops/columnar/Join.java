@@ -32,7 +32,6 @@ public class Join implements ColumnarOperator {
 		int leftLength = left[0].size();
 
 		HashMap<Integer, ArrayList<Integer>> rightMap = this.buildHashTable(right);
-		HashMap<Integer, ArrayList<Integer>> leftMap = this.buildHashTable(left);
 
 		DBColumn[] result = this.initialize(left, right);
 

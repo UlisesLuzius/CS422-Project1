@@ -24,8 +24,8 @@ public class Select implements ColumnarOperator {
 		DBColumn[] columns = this.child.execute();
 		DBColumn column = columns[fieldNo];
 
-		if (column.getType() != DataType.INT)
-			return null;
+		// if (column.getType() != DataType.INT)
+		// return null;
 
 		DBColumn[] res = new DBColumn[columns.length];
 		for (int i = 0; i < columns.length; i++) {
@@ -65,22 +65,9 @@ public class Select implements ColumnarOperator {
 			}
 		}
 
-		for (int i = 0; i < indices.size(); i++) {
-			for (int j = 0; j < res.length; j++) {
-				switch (columns[j].getType()) {
-				case INT:
-					res[j].add(columns[j].getAsInteger()[i]);
-					break;
-				case DOUBLE:
-					res[j].add(columns[j].getAsDouble()[i]);
-					break;
-				case STRING:
-					res[j].add(columns[j].getAsString()[i]);
-					break;
-				case BOOLEAN:
-					res[j].add(columns[j].getAsBoolean()[i]);
-					break;
-				}
+		for (int j = 0; j < res.length; j++) {
+			for (int i = 0; i < indices.size(); i++) {
+				res[j].add(columns[j].get(i));
 			}
 		}
 
