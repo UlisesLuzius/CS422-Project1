@@ -71,9 +71,9 @@ public class VectorSpeedTest {
 				20);
 		int[] columns = new int[] { 1, 15 };
 		ch.epfl.dias.ops.vector.Project projectLineitem = new ch.epfl.dias.ops.vector.Project(selLineitem, columns);
-
+		projectLineitem.open();
 		DBColumn[] result = projectLineitem.next();
-
+		projectLineitem.close();
 		long finish = System.currentTimeMillis();
 		System.out.println(result[0].size());
 		return finish - start;
@@ -93,9 +93,9 @@ public class VectorSpeedTest {
 		/* Filtering on both sides */
 		ch.epfl.dias.ops.vector.Join join = new ch.epfl.dias.ops.vector.Join(scanLineitem, scanOrder, 0, 0);
 		ch.epfl.dias.ops.vector.Project project = new ch.epfl.dias.ops.vector.Project(join, new int[] { 15, 23 });
-
+		project.open();
 		DBColumn[] result = project.next();
-
+		project.close();
 		long finish = System.currentTimeMillis();
 		System.out.println(result[0].size());
 		return finish - start;
@@ -116,11 +116,11 @@ public class VectorSpeedTest {
 
 		ch.epfl.dias.ops.vector.ProjectAggregate agg = new ch.epfl.dias.ops.vector.ProjectAggregate(selLineitem,
 				Aggregate.AVG, DataType.INT, 4);
-
+		agg.open();
 		DBColumn[] result = agg.next();
-
+		agg.close();
 		long finish = System.currentTimeMillis();
-		//System.out.println("Dupa " + result.length);
+		// System.out.println("Dupa " + result.length);
 		// System.out.println(result[0].size());
 
 		return finish - start;
