@@ -29,7 +29,7 @@ public class Join implements VectorOperator {
     public void open() {
         // TODO: Implement
         leftChild.open();
-        rightChild.open():
+        rightChild.open();
     }
 
     @Override

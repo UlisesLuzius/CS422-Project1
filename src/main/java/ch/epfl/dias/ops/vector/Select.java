@@ -72,6 +72,7 @@ public class Select implements VectorOperator {
 
 	@Override
 	public void close() {
+		this.child.close();
 		idx = 0;
 	}
 }

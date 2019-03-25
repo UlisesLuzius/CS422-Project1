@@ -23,12 +23,19 @@ public class Project implements VectorOperator {
 
 	@Override
 	public DBColumn[] next() {
-		// TODO: Implement
-		return null;
+		DBColumn[] columns = child.next();
+		if(columns == null) {
+			return null;
+		}
+		DBColumn[] res = new DBColumn[fieldNo.length];
+		for(int i = 0; i < fieldNo.length; i++) {
+			res[i] = columns[fieldNo[i]];
+		}
+		return res;
 	}
 
 	@Override
 	public void close() {
-		// TODO: Implement
+		this.child.close();
 	}
 }
