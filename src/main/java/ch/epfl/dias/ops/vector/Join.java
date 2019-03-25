@@ -74,7 +74,7 @@ public class Join implements VectorOperator {
 				if (indices != null) {
 					for (int j = 0; j < indices.size(); j++) {
 						for (int i = 0; i < leftColumns.length; i++) {
-							res[i].add(leftColumns[i].get(leftIdx));
+							res[i].add(leftColumns[i].get(indices.get(j)));
 						}
 						for (int i = leftColumns.length; i < leftColumns.length + rightFieldNo; i++) {
 							res[i].add(rightColumns[i - leftColumns.length].get(rightIdx));
